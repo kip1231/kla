@@ -900,6 +900,10 @@ if game.Players.LocalPlayer.Name == "hiter0010" then
 	title.Text = "KraSus Zet Owner"
 	VerifyKey()
 end
+if game.Players.LocalPlayer.Name == "2den1580" then
+	title.Text = "KraSus Zet Admin"
+	VerifyKey()
+end
 local function ChecKey(key)
 	local lin = "http://ger2-6.deploy.sbs:5186/api/checkkey?hwid=" .. hwid
 	local keys = game:HttpGet(lin)
