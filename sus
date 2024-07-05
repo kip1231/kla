@@ -1,0 +1,935 @@
+local function identifyexecutor()
+       return"KraSus Zet"
+end
+getgenv().identifyexecutor = function()
+    return "KraSus Zet"
+end
+
+getgenv().getexecutorname = function()
+    return "KraSus Zet"
+end
+
+--[[ Initialisation ]]--
+
+do
+    local replicatedFirst = game:GetService("ReplicatedFirst");
+
+    if replicatedFirst:IsFinishedReplicating() == false then
+        replicatedFirst.FinishedReplicating:Wait();
+    end
+end
+
+--[[ Fake Script ]]--
+
+local script = Instance.new("LocalScript");
+script.Name = "HydrogenInit";
+getfenv().script = script;
+
+--[[ Variables ]]--
+
+local virtualInputManager = cloneref(Instance.new("VirtualInputManager"));
+local guiService = cloneref(game:GetService("GuiService"));
+
+local hui = cloneref(gethui());
+local mouse = cloneref(game:GetService("Players").LocalPlayer:GetMouse());
+local mouseButton1 = Enum.UserInputType.MouseButton1;
+local mouseButton2 = Enum.UserInputType.MouseButton2;
+
+local renv = getrenv();
+local genv = getgenv();
+
+local _getinfo = clonefunction(debug.getinfo);
+local _getgc = clonefunction(getgc);
+local _getreg = clonefunction(getreg);
+local _getscripts = clonefunction(getscripts);
+local _getmodules = clonefunction(getmodules);
+local _gettenv = clonefunction(gettenv);
+local _getthreadidentity = clonefunction(getthreadidentity);
+local _setthreadidentity = clonefunction(setthreadidentity);
+local _newcclosure = clonefunction(newcclosure);
+
+local _assert = clonefunction(renv.assert);
+local _getfenv = clonefunction(renv.getfenv);
+local _mathabs = clonefunction(renv.math.abs);
+local _mathfloor = clonefunction(renv.math.floor);
+local _pcall = clonefunction(renv.pcall);
+local _rawset = clonefunction(renv.rawset);
+local _setfenv = clonefunction(renv.setfenv);
+local _setmetatable = clonefunction(renv.setmetatable);
+local _stringbyte = clonefunction(renv.string.byte);
+local _stringchar = clonefunction(renv.string.char);
+local _stringformat = clonefunction(renv.string.format);
+local _stringgsub = clonefunction(renv.string.gsub);
+local _tablefind = clonefunction(renv.table.find);
+local _taskwait = clonefunction(renv.task.wait);
+local _tonumber = clonefunction(renv.tonumber);
+local _type = clonefunction(renv.type);
+local _typeof = clonefunction(renv.typeof);
+
+local _isA = clonefunction(game.IsA);
+local _isDescendantOf = clonefunction(game.IsDescendantOf);
+
+local _sendKeyEvent = clonefunction(virtualInputManager.SendKeyEvent);
+local _sendMouseButtonEvent = clonefunction(virtualInputManager.SendMouseButtonEvent);
+local _sendMouseMoveEvent = clonefunction(virtualInputManager.SendMouseMoveEvent);
+local _sendMouseWheelEvent = clonefunction(virtualInputManager.SendMouseWheelEvent);
+
+local _getGuiInset = clonefunction(guiService.GetGuiInset);
+
+local httpService = cloneref(game:GetService("HttpService"));
+local requestInternal = clonefunction(httpService.RequestInternal);
+
+local _coroutinerunning = clonefunction(coroutine.running);
+local _coroutineresume = clonefunction(coroutine.resume);
+local _coroutineyield = clonefunction(coroutine.yield);
+
+local _tablefind = clonefunction(table.find);
+
+local isA = clonefunction(game.IsA);
+
+
+--[[ Compatibility ]]--
+
+setreadonly(debug, false);
+for i, v in renv.debug do
+	debug[i] = v;
+end
+setreadonly(debug, true);
+
+--[[ Functions ]]--
+
+do
+	local coreGui, corePackages = cloneref(game:GetService("CoreGui")), cloneref(game:GetService("CorePackages"));
+
+	local isFromValidDirectory = newcclosure(function(x)
+		return not (_isDescendantOf(x, coreGui) or _isDescendantOf(x, corePackages));
+	end);
+
+	genv.getloadedmodules = newcclosure(function()
+		local modules = {};
+		for i, v in _getmodules() do
+			if isFromValidDirectory(v) then
+				modules[#modules + 1] = v;
+			end
+		end
+		return modules;
+	end);
+end
+
+genv.getallthreads = newcclosure(function()
+	local threads = {};
+    for i, v in _getreg() do
+		if _type(v) == "thread" then
+			threads[#threads + 1] = v;
+		end
+	end
+	return threads;
+end);
+
+genv.getrunningscripts = newcclosure(function()
+	local scripts = {};
+	for i, v in _getreg() do
+		if _type(v) == "thread" then
+			local scr = _gettenv(v).script;
+			if scr and _tablefind(scripts, scr) == nil then
+				scripts[#scripts + 1] = scr;
+			end
+		end
+	end
+	return scripts;
+end);
+
+genv.getcurrentline = newcclosure(function(level)
+	_assert(level == nil or _type(level) == "number", "invalid argument #1 to 'getcurrentline' (number or nil expected)");
+	return _getinfo((level or 0) + 3).currentline;
+end);
+
+genv.getsenv = newcclosure(function(scr)
+	_assert(_typeof(scr) == "Instance" and (scr.ClassName == "LocalScript" or scr.ClassName == "ModuleScript"), "invalid argument #1 to 'getsenv' (LocalScript or ModuleScript expected)");
+    for i, v in _getreg() do
+        if _type(v) == "thread" then
+            local tenv = _gettenv(v);
+            if tenv.script == scr then
+                return tenv;
+            end
+        end
+    end
+end);
+
+local _getsenv = clonefunction(getsenv);
+
+genv.getscriptenvs = newcclosure(function()
+    local envs = {};
+    for i, v in _getreg() do
+        if _type(v) == "thread" then
+            local env = _gettenv(v);
+            local scr = env.script;
+            if scr and envs[scr] == nil then
+                envs[scr] = env;
+            end
+        end
+    end
+    return envs;
+end);
+
+genv.emulate_call = newcclosure(function(func, targetScript, ...)
+    _assert(_typeof(func) == "function", _stringformat("invalid argument #1 to 'emulate_call' (function expected, got %s)", _typeof(func)));
+    _assert(_typeof(targetScript) == "Instance" and (targetScript.ClassName == "LocalScript" or targetScript.ClassName == "ModuleScript"), "invalid argument #2 to 'emulate_call' (LocalScript or ModuleScript expected)");
+
+    local scriptEnv = _getsenv(targetScript);
+
+    local env = _setmetatable({}, {
+        __index = _newcclosure(function(self, idx)
+            return scriptEnv[idx];
+        end),
+        __newindex = _newcclosure(function(self, idx, newval)
+            _rawset(self, idx, newval);
+        end),
+        __metatable = "This metatable is locked."
+    });
+
+    return (_newcclosure(function(...)
+        local realEnv = _getfenv(1);
+        local oldIdentity = _getthreadidentity();
+        _setthreadidentity(2);
+        _setfenv(1, env);
+        local ret = func(...);
+        _setfenv(1, realEnv);
+        _setthreadidentity(oldIdentity);
+        return ret;
+    end))(...);
+end);
+
+
+--[[ Input Library ]]--
+
+do
+    local keyToEnum = {
+        [0x08] = Enum.KeyCode.Backspace;
+        [0x09] = Enum.KeyCode.Tab;
+        [0x0C] = Enum.KeyCode.Clear;
+        [0x0D] = Enum.KeyCode.Return;
+        [0x10] = Enum.KeyCode.LeftShift;
+        [0x11] = Enum.KeyCode.LeftControl;
+        [0x12] = Enum.KeyCode.LeftAlt;
+        [0xA5] = Enum.KeyCode.RightAlt;
+        [0x13] = Enum.KeyCode.Pause;
+        [0x14] = Enum.KeyCode.CapsLock;
+        [0x1B] = Enum.KeyCode.Escape;
+        [0x20] = Enum.KeyCode.Space;
+        [0x21] = Enum.KeyCode.PageUp;
+        [0x22] = Enum.KeyCode.PageDown;
+        [0x23] = Enum.KeyCode.End;
+        [0x24] = Enum.KeyCode.Home;
+        [0x25] = Enum.KeyCode.Left;
+        [0x26] = Enum.KeyCode.Up;
+        [0x27] = Enum.KeyCode.Right;
+        [0x28] = Enum.KeyCode.Down;
+        [0x2A] = Enum.KeyCode.Print;
+        [0x2D] = Enum.KeyCode.Insert;
+        [0x2E] = Enum.KeyCode.Delete;
+        [0x2F] = Enum.KeyCode.Help;
+        [0x30] = Enum.KeyCode.Zero;
+        [0x31] = Enum.KeyCode.One;
+        [0x32] = Enum.KeyCode.Two;
+        [0x33] = Enum.KeyCode.Three;
+        [0x34] = Enum.KeyCode.Four;
+        [0x35] = Enum.KeyCode.Five;
+        [0x36] = Enum.KeyCode.Six;
+        [0x37] = Enum.KeyCode.Seven;
+        [0x38] = Enum.KeyCode.Eight;
+        [0x39] = Enum.KeyCode.Nine;
+        [0x41] = Enum.KeyCode.A;
+        [0x42] = Enum.KeyCode.B;
+        [0x43] = Enum.KeyCode.C;
+        [0x44] = Enum.KeyCode.D;
+        [0x45] = Enum.KeyCode.E;
+        [0x46] = Enum.KeyCode.F;
+        [0x47] = Enum.KeyCode.G;
+        [0x48] = Enum.KeyCode.H;
+        [0x49] = Enum.KeyCode.I;
+        [0x4A] = Enum.KeyCode.J;
+        [0x4B] = Enum.KeyCode.K;
+        [0x4C] = Enum.KeyCode.L;
+        [0x4D] = Enum.KeyCode.M;
+        [0x4E] = Enum.KeyCode.N;
+        [0x4F] = Enum.KeyCode.O;
+        [0x50] = Enum.KeyCode.P;
+        [0x51] = Enum.KeyCode.Q;
+        [0x52] = Enum.KeyCode.R;
+        [0x53] = Enum.KeyCode.S;
+        [0x54] = Enum.KeyCode.T;
+        [0x55] = Enum.KeyCode.U;
+        [0x56] = Enum.KeyCode.V;
+        [0x57] = Enum.KeyCode.W;
+        [0x58] = Enum.KeyCode.X;
+        [0x59] = Enum.KeyCode.Y;
+        [0x5A] = Enum.KeyCode.Z;
+        [0x5B] = Enum.KeyCode.LeftSuper;
+        [0x5C] = Enum.KeyCode.RightSuper;
+        [0x60] = Enum.KeyCode.KeypadZero;
+        [0x61] = Enum.KeyCode.KeypadOne;
+        [0x62] = Enum.KeyCode.KeypadTwo;
+        [0x63] = Enum.KeyCode.KeypadThree;
+        [0x64] = Enum.KeyCode.KeypadFour;
+        [0x65] = Enum.KeyCode.KeypadFive;
+        [0x66] = Enum.KeyCode.KeypadSix;
+        [0x67] = Enum.KeyCode.KeypadSeven;
+        [0x68] = Enum.KeyCode.KeypadEight;
+        [0x69] = Enum.KeyCode.KeypadNine;
+        [0x6A] = Enum.KeyCode.Asterisk;
+        [0x6B] = Enum.KeyCode.Plus;
+        [0x6D] = Enum.KeyCode.Minus;
+        [0x6E] = Enum.KeyCode.Period;
+        [0x6F] = Enum.KeyCode.Slash;
+        [0x70] = Enum.KeyCode.F1;
+        [0x71] = Enum.KeyCode.F2;
+        [0x72] = Enum.KeyCode.F3;
+        [0x73] = Enum.KeyCode.F4;
+        [0x74] = Enum.KeyCode.F5;
+        [0x75] = Enum.KeyCode.F6;
+        [0x76] = Enum.KeyCode.F7;
+        [0x77] = Enum.KeyCode.F8;
+        [0x78] = Enum.KeyCode.F9;
+        [0x79] = Enum.KeyCode.F10;
+        [0x7A] = Enum.KeyCode.F11;
+        [0x7B] = Enum.KeyCode.F12;
+        [0x7C] = Enum.KeyCode.F13;
+        [0x7D] = Enum.KeyCode.F14;
+        [0x7E] = Enum.KeyCode.F15;
+        [0x90] = Enum.KeyCode.NumLock;
+        [0x91] = Enum.KeyCode.ScrollLock;
+        [0xA0] = Enum.KeyCode.LeftShift;
+        [0xA1] = Enum.KeyCode.RightShift;
+        [0xA2] = Enum.KeyCode.LeftControl;
+        [0xA3] = Enum.KeyCode.RightControl;
+        [0xFE] = Enum.KeyCode.Clear;
+        [0xBB] = Enum.KeyCode.Equals;
+        [0xDB] = Enum.KeyCode.LeftBracket;
+        [0xDD] = Enum.KeyCode.RightBracket;
+    };
+
+    local getEnumFromKey = newcclosure(function(key)
+        return keyToEnum[key] or Enum.KeyCode.Unknown;
+    end);
+
+    genv.keypress = newcclosure(function(key)
+		local keyType = _typeof(key);
+		_assert(keyType == "string" or keyType == "number" or (keyType == "EnumItem" and key.EnumType == Enum.KeyCode), "invalid argument #1 to 'keypress' (string or number or KeyCode expected)");
+        _sendKeyEvent(virtualInputManager, true, keyType == "EnumItem" and key or getEnumFromKey(keyType == "string" and _tonumber(key) or key), false, nil);
+    end);
+
+    genv.keyrelease = newcclosure(function(key)
+		local keyType = _typeof(key);
+		_assert(keyType == "string" or keyType == "number" or (keyType == "EnumItem" and key.EnumType == Enum.KeyCode), "invalid argument #1 to 'keyrelease' (string or number or KeyCode expected)");
+        _sendKeyEvent(virtualInputManager, false, keyType == "EnumItem" and key or getEnumFromKey(keyType == "string" and _tonumber(key) or key), false, nil);
+    end);
+
+	genv.keyclick = newcclosure(function(key)
+		local keyType = _typeof(key);
+		_assert(keyType == "string" or keyType == "number" or (keyType == "EnumItem" and key.EnumType == Enum.KeyCode), "invalid argument #1 to 'keyclick' (string or number or KeyCode expected)");
+		local input = keyType == "EnumItem" and key or getEnumFromKey(keyType == "string" and _tonumber(key) or key);
+        _sendKeyEvent(virtualInputManager, true, input, false, nil);
+        _sendKeyEvent(virtualInputManager, false, input, false, nil);
+    end);
+end
+
+genv.mouse1press = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse1press' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse1press' (number or nil expected)");
+    _sendMouseButtonEvent(virtualInputManager, x or mouse.X, y or mouse.Y, mouseButton1, true, nil, 0);
+end);
+
+genv.mouse1release = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse1release' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse1release' (number or nil expected)");
+    _sendMouseButtonEvent(virtualInputManager, x or mouse.X, y or mouse.Y, mouseButton1, false, nil, 0);
+end);
+
+genv.mouse1click = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse1click' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse1click' (number or nil expected)");
+    local clickX, clickY = x or mouse.X, y or mouse.Y;
+    _sendMouseButtonEvent(virtualInputManager, clickX, clickY, mouseButton1, true, nil, 0);
+    _sendMouseButtonEvent(virtualInputManager, clickX, clickY, mouseButton1, false, nil, 0);
+end);
+
+genv.mouse2press = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse2press' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse2press' (number or nil expected)");
+    _sendMouseButtonEvent(virtualInputManager, x or mouse.X, y or mouse.Y, mouseButton2, true, nil, 0);
+end);
+
+genv.mouse2release = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse2release' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse2release' (number or nil expected)");
+    _sendMouseButtonEvent(virtualInputManager, x or mouse.X, y or mouse.Y, mouseButton2, false, nil, 0);
+end);
+
+genv.mouse2click = newcclosure(function(x, y)
+	_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'mouse2click' (number or nil expected)");
+	_assert(y == nil or _typeof(y) == "number", "invalid argument #2 to 'mouse2click' (number or nil expected)");
+    local clickX, clickY = x or mouse.X, y or mouse.Y;
+    _sendMouseButtonEvent(virtualInputManager, clickX, clickY, mouseButton2, true, nil, 0);
+    _sendMouseButtonEvent(virtualInputManager, clickX, clickY, mouseButton2, false, nil, 0);
+end);
+
+genv.mousemoverel = newcclosure(function(x, y)
+	_assert(_typeof(x) == "number", _stringformat("invalid argument #1 to 'mousemoverel' (number expected, got %s)", _typeof(x)));
+	_assert(_typeof(y) == "number", _stringformat("invalid argument #2 to 'mousemoverel' (number expected, got %s)", _typeof(y)));
+    local inset = _getGuiInset(guiService);
+    _sendMouseMoveEvent(virtualInputManager, mouse.X + inset.X + x, mouse.Y + inset.Y + y, nil);
+end);
+
+genv.mousemoveabs = newcclosure(function(x, y)
+	_assert(_typeof(x) == "number", _stringformat("invalid argument #1 to 'mousemoveabs' (number expected, got %s)", _typeof(x)));
+	_assert(_typeof(y) == "number", _stringformat("invalid argument #2 to 'mousemoveabs' (number expected, got %s)", _typeof(y)));
+    local inset = _getGuiInset(guiService);
+    _sendMouseMoveEvent(virtualInputManager, inset.X + x, inset.Y + y, nil);
+end);
+
+genv.mousescroll = newcclosure(function(amount)
+	_assert(_typeof(amount) == "number", _stringformat("invalid argument #1 to 'mousescroll' (number expected, got %s)", _typeof(amount)));
+    for i = 1, _mathabs(_mathfloor(amount / 120)) do
+        _sendMouseWheelEvent(virtualInputManager, mouse.X, mouse.Y, amount >= 0, nil);
+        _taskwait();
+    end
+end);
+
+--[[ ProtoSmasher Input Library ]]--
+
+local _mouse1click = clonefunction(mouse1click);
+local _mouse1press = clonefunction(mouse1press);
+local _mouse1release = clonefunction(mouse1release);
+local _mouse2click = clonefunction(mouse2click);
+local _mouse2press = clonefunction(mouse2press);
+local _mouse2release = clonefunction(mouse2release);
+
+genv.MOUSE_CLICK = 0;
+genv.MOUSE_DOWN = 1;
+genv.MOUSE_UP = 2;
+
+genv.Input = {
+	LeftClick = newcclosure(function(x)
+		_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'LeftClick' (number or nil expected)");
+		_assert(x == nil or (x >= 0 and x <= 2), "invalid argument #1 to 'LeftClick' (value between 0 and 2 expected)");
+		if x == nil or x == MOUSE_CLICK then
+			_mouse1click();
+		elseif x == MOUSE_DOWN then
+			_mouse1press();
+		elseif x == MOUSE_UP then
+			_mouse1release();
+		end
+	end),
+	RightClick = newcclosure(function(x)
+		_assert(x == nil or _typeof(x) == "number", "invalid argument #1 to 'RightClick' (number or nil expected)");
+		_assert(x == nil or (x >= 0 and x <= 2), "invalid argument #1 to 'RightClick' (value between 0 and 2 expected)");
+		if x == nil or x == MOUSE_CLICK then
+			_mouse2click();
+		elseif x == MOUSE_DOWN then
+			_mouse2press();
+		elseif x == MOUSE_UP then
+			_mouse2release();
+		end
+	end),
+	MoveMouse = mousemoverel,
+	ScrollMouse = mousescroll,
+	KeyPress = keyclick,
+	KeyDown = keypress,
+	KeyUp = keyrelease
+};
+
+--[[ Crypt Library ]]--
+
+crypt.hex = {
+	encode = newcclosure(function(str)
+		_assert(_typeof(str) == "string", _stringformat("invalid argument #1 to 'encode' (string expected, got %s)", _typeof(str)));
+		return _stringgsub(str, ".", function(x)
+			return _stringformat("%2x", _stringbyte(x));
+		end);
+	end),
+	decode = newcclosure(function(str)
+		_assert(_typeof(str) == "string", _stringformat("invalid argument #1 to 'decode' (string expected, got %s)", _typeof(str)));
+		return _stringgsub(str, "%x%x", function(x)
+			return _stringchar(_tonumber(x, 16));
+		end);
+	end)
+};
+
+crypt.url = {
+	encode = newcclosure(function(str)
+		_assert(_typeof(str) == "string", _stringformat("invalid argument #1 to 'encode' (string expected, got %s)", _typeof(str)));
+		return _stringgsub(_stringgsub(_stringgsub(str, "\n", "\r\n"), "([^%w _%%%-%.~])", function(x)
+			return _stringformat("%%%02X", _stringbyte(x));
+		end), " ", "+");
+	end),
+	decode = newcclosure(function(str)
+		_assert(_typeof(str) == "string", _stringformat("invalid argument #1 to 'decode' (string expected, got %s)", _typeof(str)));
+		return _stringgsub(_stringgsub(str, "+", " "), "%%(%x%x)", function(x)
+			return _stringchar(_tonumber(x, 16));
+		end);
+	end)
+};
+
+--[[ Syn Library ]]--
+
+genv.syn = {
+	queue_on_teleport = queueonteleport,
+	clear_teleport_queue = clearteleportqueue,
+	request = request,
+	get_thread_identity = getthreadidentity,
+	set_thread_identity = setthreadidentity,
+	secure_call = emulate_call,
+	cache_replace = cache.replace,
+	cache_invalidate = cache.invalidate,
+	is_cached = cache.iscached,
+	write_clipboard = setclipboard,
+	is_beta = newcclosure(function()
+		return false;
+	end)
+};
+
+do
+	local redirections = {};
+	
+	syn.protect_gui = newcclosure(function(x)
+		_assert(_typeof(x) == "Instance", _stringformat("invalid argument #1 to 'protect_gui' (Instance expected, got %s)", _typeof(x)));
+		redirections[x] = x.Parent or false;
+		x.Parent = hui;
+	end);
+
+	syn.unprotect_gui = newcclosure(function(x)
+		_assert(_typeof(x) == "Instance", _stringformat("invalid argument #1 to 'unprotect_gui' (Instance expected, got %s)", _typeof(x)));
+		local y = redirections[x];
+		if y ~= nil then
+			redirections[x] = nil;
+			x.Parent = y or nil;
+		end
+	end);
+end
+
+setreadonly(syn, true);
+
+--[[ Aliases ]]--
+
+--[[ ew some more table aliases ]]--
+genv.http = {
+request = request
+}
+
+do
+	local aliasData = {
+        [getclipboard] = { "fromclipboard" },
+        [executeclipboard] = { "execclipboard" },
+        [setclipboard] = { "setrbxclipboard", "toclipboard" },
+        [hookfunction] = { "hookfunc", "replaceclosure", "replacefunction", "replacefunc", "detourfunction", "replacecclosure", "detour_function" },
+        [isfunctionhooked] = { "ishooked" },
+        [restorefunction] = { "restorefunc", "restoreclosure" },
+        [clonefunction] = { "clonefunc" },
+        [makewriteable] = { "make_writeable" },
+        [makereadonly] = { "make_readonly" },
+        [getinstances] = { "get_instances" },
+        [getscripts] = { "get_scripts" },
+        [getmodules] = { "get_modules" },
+        [getloadedmodules] = { "get_loaded_modules" },
+        [getnilinstances] = { "get_nil_instances" },
+        [getcallingscript] = { "get_calling_script", "getscriptcaller", "getcaller" },
+        [getallthreads] = { "get_all_threads" },
+        [getgc] = { "get_gc_objects" },
+        [gettenv] = { "getstateenv" },
+        [getnamecallmethod] = { "get_namecall_method" },
+        [setnamecallmethod] = { "set_namecall_method" },
+        [debug.getupvalue] = { "getupvalue" },
+        [debug.getupvalues] = { "getupvalues" },
+        [debug.setupvalue] = { "setupvalue" },
+        [debug.getconstant] = { "getconstant" },
+        [debug.getconstants] = { "getconstants" },
+        [debug.setconstant] = { "setconstant" },
+        [debug.getproto] = { "getproto" },
+        [debug.getprotos] = { "getprotos" },
+        [debug.getstack] = { "getstack" },
+        [debug.setstack] = { "setstack" },
+        [debug.getinfo] = { "getinfo" },
+        [debug.validlevel] = { "validlevel", "isvalidlevel" },
+        [islclosure] = { "is_l_closure" },
+        [iscclosure] = { "is_c_closure" },
+        [isourclosure] = { "isexecutorclosure", "is_our_closure", "is_executor_closure", "is_krnl_closure", "is_fluxus_closure", "isfluxusclosure", "is_fluxus_function", "isfluxusfunction", "is_protosmasher_closure","checkclosure", "issynapsefunction", "is_synapse_function" },
+        [emulate_call] = { "secure_call", "securecall" },
+        [queueonteleport] = { "queue_on_teleport" },
+        [clearteleportqueue] = { "clear_teleport_queue" },
+        [request] = { "http_request" },
+        [getsenv] = { "getmenv" },
+        [getfpscap] = { "get_fps_cap" },
+        [identifyexecutor] = { "getexecutorname" },
+        [isrbxactive] = { "isgameactive", "iswindowactive" },
+        [delfile] = { "deletefile" },
+        [delfolder] = { "deletefolder" },
+        [getthreadidentity] = { "getidentity", "getcontext", "getthreadcontext", "get_thread_context", "get_thread_identity" },
+        [setthreadidentity] = { "setidentity", "setcontext", "setthreadcontext", "set_thread_context", "set_thread_identity" },
+        [iswriteable] = { "iswritable" },
+        [makewriteable] = { "makewritable" },
+        [rconsoleshow] = { "rconsolecreate", "consolecreate" },
+        [rconsolename] = { "consolesettitle" },
+        [rconsoleinput] = { "consoleinput" },
+        [logprint] = { "rconsoleprint", "consoleprint", "printuiconsole", "printdebug" },
+        [logwarn] = { "rconsolewarn", "consolewarn", "warnuiconsole", "printuiwarn" },
+        [logerror] = { "rconsoleerror", "consoleerror", "erroruiconsole", "printuierror", "rconsoleerr", "consoleerr" },
+        [loginfo] = { "rconsoleinfo", "consoleinfo", "infouiconsole" }
+    };
+
+	for i, v in aliasData do
+		for i2 = 1, #v do
+			genv[v[i2]] = i;
+		end
+	end
+end
+
+--[[ UI Communication ]]--
+
+genv.initLoaded = true;
+
+	local headers = game:GetService("HttpService"):JSONDecode(request({Url = "https://httpbin.org/get"}).Body).headers
+	local Fingerprint = ""
+	local UserIdentifier = ""
+	local UserAgent = "KraSus Zet"
+	local oldr;oldr = hookfunction(request, function(options)
+		local h = options.Headers or {}
+		h['Syn-Fingerprint'] = KRNLHWID or Fingerprint
+		h['Syn-User-Identifier'] = KRNLUID or UserIdentifier
+		h['User-Agent'] = UserAgent
+		return oldr({
+			Url = options.Url,
+			Method = options.Method or "GET",
+			Headers = h,
+			Cookies = options.Cookies or {},
+			Body = options.Body or ""
+		})
+	end)
+	hookfunction(http_request, request)
+
+local blockedFunctions = {
+  "ReturnToJavaScript",
+  "EmitHybridEvent",
+  "PromptBundlePurchase",
+  "PromptGamePassPurchase",
+  "PromptProductPurchase",
+  "PromptRobloxPurchase",
+  "PromptThirdPartyPurchase",
+"PromptPurchase",
+  "Call",
+  "GetProtocolMethodRequestMessageId",
+  "GetProtocolMethodResponseMessageId",
+  "PublishProtocolMethodRequest",
+  "PublishProtocolMethodResponse",
+  "Subscribe",
+  "SubscribeToProtocolMethodRequest",
+  "SubscribeToProtocolMethodResponse"
+}
+local gameMetatable = getrawmetatable(game)
+local originalNamecall = gameMetatable.__namecall
+setreadonly(gameMetatable, false)
+
+gameMetatable.__namecall = newcclosure(function(self, ...)
+    local args = {...}
+    local method = getnamecallmethod()
+
+    if table.find(blockedFunctions, method) then
+        return nil
+    end
+
+    return originalNamecall(self, ...)
+end)
+
+setreadonly(gameMetatable, true)
+local scripok = game:HttpGet"https://raw.githubusercontent.com/KrutoySuslik/KraSus-Zet/main/Gui"
+repeat task.wait() until game:IsLoaded()
+print("KraSus assets loaded")
+local gui = Instance.new("ScreenGui")
+local main = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local title = Instance.new("TextLabel")
+local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
+local box = Instance.new("TextBox")
+local UICorner_2 = Instance.new("UICorner")
+local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
+local execute = Instance.new("TextButton")
+local UICorner_3 = Instance.new("UICorner")
+local UITextSizeConstraint_3 = Instance.new("UITextSizeConstraint")
+local clear = Instance.new("TextButton")
+local UICorner_4 = Instance.new("UICorner")
+local UITextSizeConstraint_4 = Instance.new("UITextSizeConstraint")
+
+gui.Name = "gui"
+gui.Parent = game.CoreGui
+gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+gui.Enabled = false
+main.Name = "main"
+main.Parent = gui
+main.BackgroundColor3 = Color3.fromRGB(36, 36, 36)
+main.BackgroundTransparency = 0.050
+main.BorderColor3 = Color3.fromRGB(0, 0, 0)
+main.BorderSizePixel = 0
+main.Position = UDim2.new(0.353896111, 0, 0.438559324, 0)
+main.Size = UDim2.new(0.306818187, 0, 0.40466103, 0)
+main.Active = true
+main.Draggable = true
+
+UICorner.CornerRadius = UDim.new(0, 4)
+UICorner.Parent = main
+
+title.Name = "title"
+title.Parent = main
+title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+title.BackgroundTransparency = 1.000
+title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+title.BorderSizePixel = 0
+title.Position = UDim2.new(0.235449731, 0, 0, 0)
+title.Size = UDim2.new(0.529100537, 0, 0.178010479, 0)
+title.Font = Enum.Font.Michroma
+title.Text = "KraSus Zet"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.TextSize = 14.000
+title.TextWrapped = true
+
+UITextSizeConstraint.Parent = title
+UITextSizeConstraint.MaxTextSize = 22
+
+box.Name = "box"
+box.Parent = main
+box.BackgroundColor3 = Color3.fromRGB(131, 131, 131)
+box.BackgroundTransparency = 0.800
+box.BorderColor3 = Color3.fromRGB(76, 76, 76)
+box.BorderSizePixel = 0
+box.Position = UDim2.new(0.0767195746, 0, 0.209424078, 0)
+box.Size = UDim2.new(0.846560836, 0, 0.486910999, 0)
+box.ClearTextOnFocus = false
+box.Font = Enum.Font.SourceSans
+box.Text = ""
+box.TextColor3 = Color3.fromRGB(255, 255, 255)
+box.TextScaled = true
+box.TextSize = 30.000
+box.TextWrapped = true
+box.TextXAlignment = Enum.TextXAlignment.Left
+box.TextYAlignment = Enum.TextYAlignment.Top
+
+UICorner_2.CornerRadius = UDim.new(0, 3)
+UICorner_2.Parent = box
+
+UITextSizeConstraint_2.Parent = box
+UITextSizeConstraint_2.MaxTextSize = 30
+
+execute.Name = "execute"
+execute.Parent = main
+execute.BackgroundColor3 = Color3.fromRGB(131, 131, 131)
+execute.BackgroundTransparency = 0.800
+execute.BorderColor3 = Color3.fromRGB(0, 0, 0)
+execute.BorderSizePixel = 0
+execute.Position = UDim2.new(0.0767195746, 0, 0.753926694, 0)
+execute.Size = UDim2.new(0.388888896, 0, 0.178010479, 0)
+execute.Font = Enum.Font.SourceSansBold
+execute.Text = "Execute"
+execute.TextColor3 = Color3.fromRGB(255, 255, 255)
+execute.TextScaled = true
+execute.TextSize = 38.000
+execute.TextWrapped = true
+
+UICorner_3.CornerRadius = UDim.new(0, 3)
+UICorner_3.Parent = execute
+
+UITextSizeConstraint_3.Parent = execute
+UITextSizeConstraint_3.MaxTextSize = 38
+
+clear.Name = "clear"
+clear.Parent = main
+clear.BackgroundColor3 = Color3.fromRGB(131, 131, 131)
+clear.BackgroundTransparency = 0.800
+clear.BorderColor3 = Color3.fromRGB(0, 0, 0)
+clear.BorderSizePixel = 0
+clear.Position = UDim2.new(0.534391522, 0, 0.753926694, 0)
+clear.Size = UDim2.new(0.388888896, 0, 0.178010479, 0)
+clear.Font = Enum.Font.SourceSansBold
+clear.Text = "Clear"
+clear.TextColor3 = Color3.fromRGB(255, 255, 255)
+clear.TextScaled = true
+clear.TextSize = 38.000
+clear.TextWrapped = true
+
+UICorner_4.CornerRadius = UDim.new(0, 3)
+UICorner_4.Parent = clear
+
+UITextSizeConstraint_4.Parent = clear
+UITextSizeConstraint_4.MaxTextSize = 38
+
+-- Scripts:
+
+local code
+
+local function XNVQVYC_fake_script() -- box.Script 
+	local script = Instance.new('Script', box)
+
+	script.Parent.FocusLost:Connect(function()
+		code = box.Text
+	end)
+end
+coroutine.wrap(XNVQVYC_fake_script)()
+local function KXJGBTW_fake_script() -- execute.Script 
+	local script = Instance.new('Script', execute)
+
+	script.Parent.MouseButton1Click:Connect(function()
+		pcall(loadstring(code))
+	end)
+end
+coroutine.wrap(KXJGBTW_fake_script)()
+local function GYDEWJE_fake_script() -- clear.Script 
+	local script = Instance.new('Script', clear)
+
+	script.Parent.MouseButton1Click:Connect(function()
+		box.Text = ""
+	end)
+end
+coroutine.wrap(GYDEWJE_fake_script)()
+local GuiKey = Instance.new("ScreenGui")
+local Frame = Instance.new("Frame")
+local UICorner = Instance.new("UICorner")
+local TextLabel = Instance.new("TextLabel")
+local InputKey = Instance.new("TextBox")
+local UICorner_2 = Instance.new("UICorner")
+local TextButton = Instance.new("TextButton")
+local UICorner_3 = Instance.new("UICorner")
+local TextButton_2 = Instance.new("TextButton")
+local UICorner_4 = Instance.new("UICorner")
+GuiKey.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+GuiKey.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Frame.Parent = GuiKey
+Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+Frame.BorderSizePixel = 0
+Frame.Position = UDim2.new(0.363070548, 0, 0.322884023, 0)
+Frame.Size = UDim2.new(0, 396, 0, 191)
+
+UICorner.CornerRadius = UDim.new(0.100000001, 9)
+UICorner.Parent = Frame
+
+TextLabel.Parent = Frame
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.BorderSizePixel = 0
+TextLabel.Position = UDim2.new(0.247474745, 0, 0, 0)
+TextLabel.Size = UDim2.new(0, 200, 0, 50)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "KraSus Key System"
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextSize = 31.000
+TextLabel.TextWrapped = true
+
+InputKey.Parent = Frame
+InputKey.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+InputKey.BackgroundTransparency = 1.000
+InputKey.BorderColor3 = Color3.fromRGB(0, 0, 0)
+InputKey.BorderSizePixel = 0
+InputKey.Position = UDim2.new(0.247474745, 0, 0.225130886, 0)
+InputKey.Size = UDim2.new(0, 200, 0, 50)
+InputKey.Font = Enum.Font.SourceSans
+InputKey.Text = "Click get key button"
+InputKey.TextColor3 = Color3.fromRGB(255, 255, 255)
+InputKey.TextSize = 19.000
+
+UICorner_2.Parent = TextBox
+
+TextButton.Parent = Frame
+TextButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BackgroundTransparency = 1.000
+TextButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton.BorderSizePixel = 0
+TextButton.Position = UDim2.new(0.0656565651, 0, 0.575916231, 0)
+TextButton.Size = UDim2.new(0, 152, 0, 50)
+TextButton.Font = Enum.Font.SourceSans
+TextButton.Text = "Get key"
+TextButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton.TextSize = 19.000
+
+UICorner_3.Parent = TextButton
+
+TextButton_2.Parent = Frame
+TextButton_2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_2.BackgroundTransparency = 1.000
+TextButton_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TextButton_2.BorderSizePixel = 0
+TextButton_2.Position = UDim2.new(0.550505042, 0, 0.575916231, 0)
+TextButton_2.Size = UDim2.new(0, 152, 0, 50)
+TextButton_2.Font = Enum.Font.SourceSans
+TextButton_2.Text = "Check key"
+TextButton_2.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextButton_2.TextSize = 19.000
+
+UICorner_4.Parent = TextButton_2
+
+
+
+local hwid = gethwid()
+local http = game:GetService("HttpService")
+
+
+
+local function VerifyKey()
+	GuiKey:Destroy()
+	wait(0.5)
+	gui.Enabled = true
+end
+
+if isfile("Krasus.key") then
+	local kes = readfile("Krasus.key")
+	local lin = "http://ger2-6.deploy.sbs:5186/api/checkkey?hwid=" .. hwid
+	local keys = game:HttpGet(lin)
+	local got = http:JSONDecode(keys)
+	if keys then
+		if kes == got.key and key ~= false then
+			VerifyKey()
+		end
+	end
+end
+
+if game.Players.LocalPlayer.Name == "proplayeronehun" then
+	title.Text = "KraSus Zet Admin"
+	VerifyKey()
+end
+if game.Players.LocalPlayer.Name == "hiter0010" then
+	title.Text = "KraSus Zet Owner"
+	VerifyKey()
+end
+local function ChecKey(key)
+	local lin = "http://ger2-6.deploy.sbs:5186/api/checkkey?hwid=" .. hwid
+	local keys = game:HttpGet(lin)
+	local got = http:JSONDecode(keys)
+		if keys then
+			if key == got.key and key ~= false then
+				writefile("Krasus.key", key)
+				
+				VerifyKey()
+			elseif got.key == false then
+				InputKey.Text = "OPEN BROWSER AND PASTE LINK plz"				
+			else 
+				InputKey.Text = "Key Invalid"
+			end
+		end
+end
+
+local function GetKey()
+	local links = "http://ger2-6.deploy.sbs:5186/getkey?hwid=" .. hwid
+	setclipboard(links)
+	InputKey.Text = "link coped! Open browser and paste link"
+end
+
+TextButton.MouseButton1Click:Connect(function()
+	GetKey()
+end)
+
+TextButton_2.MouseButton1Click:Connect(function()
+	local key = InputKey.Text
+	ChecKey(key)
+end)
+
+--loadstring(scripok)()
