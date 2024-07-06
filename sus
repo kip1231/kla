@@ -615,8 +615,7 @@ end)
 execute.MouseButton1Click:Connect(function()
 	local scriptString = editors.Text
     local success, errorMsg = pcall(function()
-        local scriptFunc = loadstring(scriptString)
-        scriptFunc()
+	loadstring(scriptString)
     end)
 
     if not success then
