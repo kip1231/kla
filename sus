@@ -615,7 +615,11 @@ end)
 execute.MouseButton1Click:Connect(function()
 	local scriptString = editors.Text
     local success, errorMsg = pcall(function()
-	loadstring(scriptString)
+		local function execute(content: string)
+			(runcode or function() end)(content);
+			recent:Parse(content);
+		end
+		execute(content: scriptString)
     end)
 
     if not success then
