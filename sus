@@ -977,6 +977,14 @@ if isfile("Krasus.key") then
 	local got = http:JSONDecode(keys)
 	if keys then
 		if kes == got.key and key ~= false then
+			function secondsToHours(seconds)
+  			local hours = math.floor(seconds / 3600)
+  			return hours
+			end
+
+			local seconds = got.time
+			local hours = secondsToHours(seconds)
+			game.StarterGui:SetCore("SendNotification", {Title="Your key expired in"; Text= hours .. " hours"; Duration=10;})
 			VerifyKey()
 		end
 	end
@@ -1001,7 +1009,14 @@ local function ChecKey(key)
 		if keys then
 			if key == got.key and key ~= false then
 				writefile("Krasus.key", key)
-				
+			function secondsToHours(seconds)
+  			local hours = math.floor(seconds / 3600)
+  			return hours
+			end
+
+			local seconds = got.time
+			local hours = secondsToHours(seconds)
+			game.StarterGui:SetCore("SendNotification", {Title="Your key expired in"; Text= hours .. " hours"; Duration=10;})
 				VerifyKey()
 			elseif got.key == false then
 				InputKey.Text = "OPEN BROWSER AND PASTE LINK plz"				
