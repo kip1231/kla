@@ -614,7 +614,7 @@ end)
 
 execute.MouseButton1Click:Connect(function()
 	local scriptString = editors.Text
-	runcode(scriptString)
+	loadstring(scriptString)
     end)
 end)
 
