@@ -123,7 +123,6 @@ local HttpService = game:GetService("HttpService")
 local player = game.Players.LocalPlayer
 local menu = Instance.new("ScreenGui")
 menu.Parent = CoreGui
-menu.Enabled = false
 
 local Gui1o = Instance.new("Frame")
 local Guoo = Instance.new("Frame")
@@ -878,7 +877,13 @@ corner10.Name = randomString
 corner11.Name = randomString
 closvis.Name = randomString
 print("-----------[]Gui Loaded[]-----------")
-wait(3)
+
+
+
+end
+
+
+
 local GuiKey = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
@@ -967,7 +972,7 @@ local http = game:GetService("HttpService")
 local function VerifyKey()
 	GuiKey:Destroy()
 	wait(0.5)
-	menu.Enabled = true
+	KraSus()
 end
 
 if isfile("Krasus.key") then
@@ -1043,9 +1048,7 @@ end)
 
 
 
-end
 
-KraSus()
 
 
 print("suslik lox2")
