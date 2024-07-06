@@ -773,13 +773,17 @@ local function XNVQVYC_fake_script() -- box.Script
 	end)
 end
 coroutine.wrap(XNVQVYC_fake_script)()
-local function KXJGBTW_fake_script() -- execute.Script 
-	local script = Instance.new('Script', execute)
+execute.MouseButton1Click:Connect(function()
+  local scriptString = box.Text
+     local success, errorMsg = pcall(function()
+         local scriptFunc = loadstring(scriptString)
+         local result = scriptFunc()
+     end)
 
-	script.Parent.MouseButton1Click:Connect(function()
-		pcall(loadstring(code))
-	end)
-end
+     if not success then
+         warn("Error: " .. errorMsg)
+     end
+end)
 coroutine.wrap(KXJGBTW_fake_script)()
 local function GYDEWJE_fake_script() -- clear.Script 
 	local script = Instance.new('Script', clear)
