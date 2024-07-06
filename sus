@@ -614,12 +614,12 @@ end)
 
 execute.MouseButton1Click:Connect(function()
 	local scriptString = editors.Text
-	loadstring(scriptString)
+	pcall(loadstring(scriptString))
 end)
 
 executec.MouseButton1Click:Connect(function()
       local scriptString = getclipboard()
-	loadstring(scriptString)
+	pcall(loadstring(scriptString))
 end)	
 	
 clear.MouseButton1Click:Connect(function()
