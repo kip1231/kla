@@ -879,18 +879,6 @@ corner11.Name = randomString
 closvis.Name = randomString
 print("-----------[]Gui Loaded[]-----------")
 wait(3)
-end
-
-KraSus()
-
-
-print("suslik lox2")
-
-
-
-
-
-
 local GuiKey = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local UICorner = Instance.new("UICorner")
@@ -1037,5 +1025,20 @@ TextButton_2.MouseButton1Click:Connect(function()
 	local key = InputKey.Text
 	ChecKey(key)
 end)
+
+
+
+end
+
+KraSus()
+
+
+print("suslik lox2")
+
+
+
+
+
+
 
 --loadstring(scripok)()
