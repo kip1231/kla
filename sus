@@ -619,14 +619,7 @@ end)
 
 executec.MouseButton1Click:Connect(function()
       local scriptString = getclipboard()
-      local success, errorMsg = pcall(function()
-          local scriptFunc = loadstring(scriptString)
-          scriptFunc()
-      end)
-    
-      if not success then
-          warn("Error executing script: " .. errorMsg)
-      end
+	loadstring(scriptString)
 end)	
 	
 clear.MouseButton1Click:Connect(function()
