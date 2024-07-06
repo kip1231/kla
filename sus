@@ -616,10 +616,6 @@ execute.MouseButton1Click:Connect(function()
 	local scriptString = editors.Text
 	runcode(scriptString)
     end)
-
-    if not success then
-        warn("Error" .. errorMsg)
-    end
 end)
 
 executec.MouseButton1Click:Connect(function()
