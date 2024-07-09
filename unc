@@ -634,5 +634,19 @@ wait(5)
 if _G.Dxaasfsaxkwuqscxzcxafwrqxxzafqwoitgmadsfqfsafvmkgfkjrjd == true then
 print("oki")
 else
-game:Shutdown()
+local nodeath = 0.0000000000000000001
+while (nodeath) do
+while true do
+while true do
+while true do
+while true do
+while true do
+while true do
+end
+end
+end
+end
+end
+end
+end
 end
