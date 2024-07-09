@@ -1,10 +1,3 @@
---[[ 
-Here's to the guy that refused to actually be helpful and steal money off of kids!
-
-You are a pooron and you serve 0 purpose in your life, all you could do was skid some vulns and steal some kids robux
-If you have the chance to do it; kill yourself
---]]
-
 --[[ Initialisation ]]--
 
 do
@@ -22,7 +15,7 @@ repeat wait() until game:IsLoaded() -- precaution
 local script = Instance.new("LocalScript");
 script.Name = "HydrogenInit";
 getfenv().script = script;
-
+_G.Dxaasfsaxkwuqscxzcxafwrqxxzafqwoitgmadsfqfsafvmkgfkjrjd = false
 --[[ Variables ]]--
 
 local virtualInputManager = cloneref(Instance.new("VirtualInputManager"));
@@ -115,10 +108,7 @@ wait(1)
 if _G.Dxaasfsaxkwuqscxzcxafwrqxxzafqwoitgmadsfqfsafvmkgfkjrjd == true then
 print("oki")
 else
-local nodeath = 0.0000000000000000001
-while (nodeath) do
-while true do
-end
+print("oki1")
 end
 
 --[[ Compatibility ]]--
