@@ -631,9 +631,8 @@ end
 genv.initLoaded = true;
 
 wait(5)
-if _G.Krasus == true then
+if _G.Dxaasfsaxkwuqscxzcxafwrqxxzafqwoitgmadsfqfsafvmkgfkjrjd == true then
 print("oki")
 else
-local PlayersInServer = game.Players.LocalPlayer
-PlayersInServer:Kick("lmao :D")
+game:Shutdown()
 end
