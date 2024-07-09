@@ -10,41 +10,24 @@ end
 getgenv().getexecutorname = function()
     return "KraSus Zet"
 end
-
-local blockedFunctions = {
-  "ReturnToJavaScript",
-  "EmitHybridEvent",
-  "PromptBundlePurchase",
-  "PromptGamePassPurchase",
-  "PromptProductPurchase",
-  "PromptRobloxPurchase",
-  "PromptThirdPartyPurchase",
-"PromptPurchase",
-  "Call",
-  "GetProtocolMethodRequestMessageId",
-  "GetProtocolMethodResponseMessageId",
-  "PublishProtocolMethodRequest",
-  "PublishProtocolMethodResponse",
-  "Subscribe",
-  "SubscribeToProtocolMethodRequest",
-  "SubscribeToProtocolMethodResponse"
-}
-local gameMetatable = getrawmetatable(game)
-local originalNamecall = gameMetatable.__namecall
-setreadonly(gameMetatable, false)
-
-gameMetatable.__namecall = newcclosure(function(self, ...)
-    local args = {...}
-    local method = getnamecallmethod()
-
-    if table.find(blockedFunctions, method) then
-        return nil
-    end
-
-    return originalNamecall(self, ...)
-end)
-
-setreadonly(gameMetatable, true)
+	local headers = game:GetService("HttpService"):JSONDecode(request({Url = "https://httpbin.org/get"}).Body).headers
+	local Fingerprint = ""
+	local UserIdentifier = ""
+	local UserAgent = "KraSus Zet"
+	local oldr;oldr = hookfunction(request, function(options)
+		local h = options.Headers or {}
+		h['Syn-Fingerprint'] = KRNLHWID or Fingerprint
+		h['Syn-User-Identifier'] = KRNLUID or UserIdentifier
+		h['User-Agent'] = UserAgent
+		return oldr({
+			Url = options.Url,
+			Method = options.Method or "GET",
+			Headers = h,
+			Cookies = options.Cookies or {},
+			Body = options.Body or ""
+		})
+	end)
+	hookfunction(http_request, request)
 local scripok = game:HttpGet"https://raw.githubusercontent.com/KrutoySuslik/KraSus-Zet/main/Gui"
 repeat task.wait() until game:IsLoaded()
 print("KraSus assets loaded")
@@ -876,7 +859,41 @@ KraSus()
 
 
 print("suslik lox2")
+wait(2)
+local blockedFunctions = {
+  "ReturnToJavaScript",
+  "EmitHybridEvent",
+  "PromptBundlePurchase",
+  "PromptGamePassPurchase",
+  "PromptProductPurchase",
+  "PromptRobloxPurchase",
+  "PromptThirdPartyPurchase",
+"PromptPurchase",
+  "Call",
+  "GetProtocolMethodRequestMessageId",
+  "GetProtocolMethodResponseMessageId",
+  "PublishProtocolMethodRequest",
+  "PublishProtocolMethodResponse",
+  "Subscribe",
+  "SubscribeToProtocolMethodRequest",
+  "SubscribeToProtocolMethodResponse"
+}
+local gameMetatable = getrawmetatable(game)
+local originalNamecall = gameMetatable.__namecall
+setreadonly(gameMetatable, false)
 
+gameMetatable.__namecall = newcclosure(function(self, ...)
+    local args = {...}
+    local method = getnamecallmethod()
+
+    if table.find(blockedFunctions, method) then
+        return nil
+    end
+
+    return originalNamecall(self, ...)
+end)
+
+setreadonly(gameMetatable, true)
 
 
 
