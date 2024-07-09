@@ -46,6 +46,7 @@ local _checkcaller = clonefunction(checkcaller);
 
 local _assert = clonefunction(renv.assert);
 local _error = clonefunction(renv.error);
+print("dascaxcavasfq")
 local _getfenv = clonefunction(renv.getfenv);
 local _mathabs = clonefunction(renv.math.abs);
 local _mathfloor = clonefunction(renv.math.floor);
@@ -132,18 +133,6 @@ genv.getallthreads = newcclosure(function()
 	return threads;
 end);
 
-genv.getrunningscripts = newcclosure(function()
-	local scripts = {};
-	for i, v in _getreg() do
-		if _type(v) == "thread" then
-			local scr = _gettenv(v).script;
-			if scr and _tablefind(scripts, scr) == nil then
-				scripts[#scripts + 1] = scr;
-			end
-		end
-	end
-	return scripts;
-end);
 
 genv.getcurrentline = newcclosure(function(level)
 	_assert(level == nil or _type(level) == "number", "invalid argument #1 to 'getcurrentline' (number or nil expected)");
